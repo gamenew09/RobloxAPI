@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -76,6 +77,15 @@ namespace RobloxApi
 
         }
 
+        /// <summary>
+        /// Gets the clan of this group if any, will be null if no clan exists for this group.
+        /// </summary>
+        /// <returns>Gets the clan of this group if any, will be null if no clan exists for this group.</returns>
+        public async Task<Clan> ToClan()
+        {
+            return await Clan.FromID(ID);
+        }
+
         public Group(int groupId)
         {
             ID = groupId;
@@ -93,39 +103,46 @@ namespace RobloxApi
         /// <returns>The group object</returns>
         public static async Task<Group> FromID(int groupId)
         {
-            Group group = new Group();
-            group.ID = groupId;
-
-            string data = await HttpHelper.GetStringFromURL(string.Format("https://api.roblox.com/groups/{0}", groupId));
-
-            JObject obj = JObject.Parse(data);
-
-            group.Name = (string)obj["Name"];
-
-            JObject jOwner = (JObject)obj["Owner"];
-
-            if (jOwner != null)
+            try
             {
-                User owner = new User((int)jOwner["Id"]);
-                owner.Username = (string)jOwner["Name"];
+                Group group = new Group();
+                group.ID = groupId;
 
-                group.Owner = owner;
+                string data = await HttpHelper.GetStringFromURL(string.Format("https://api.roblox.com/groups/{0}", groupId));
+
+                JObject obj = JObject.Parse(data);
+
+                group.Name = (string)obj["Name"];
+
+                JObject jOwner = (JObject)obj["Owner"];
+
+                if (jOwner != null)
+                {
+                    User owner = new User((int)jOwner["Id"]);
+                    owner.Username = (string)jOwner["Name"];
+
+                    group.Owner = owner;
+                }
+
+                group.EmblemUrl = (string)obj["EmblemUrl"];
+                group.Description = (string)obj["Description"];
+
+                JArray roles = obj.Value<JArray>("Roles");
+
+                group.Roles = new GroupRole[roles.Count];
+
+                for (int i = 0; i < group.Roles.Length; i++)
+                {
+                    JObject o = (JObject)roles[i];
+                    group.Roles[i] = new GroupRole((string)o["Name"], (int)o["Rank"]);
+                }
+
+                return group;
             }
-            
-            group.EmblemUrl = (string)obj["EmblemUrl"];
-            group.Description = (string)obj["Description"];
-
-            JArray roles = obj.Value<JArray>("Roles");
-
-            group.Roles = new GroupRole[roles.Count];
-
-            for(int i = 0; i < group.Roles.Length; i++)
+            catch (WebException)
             {
-                JObject o = (JObject)roles[i];
-                group.Roles[i] = new GroupRole((string)o["Name"], (int)o["Rank"]);
+                return null;
             }
-
-            return group;
         }
 
         private struct GroupResult_t

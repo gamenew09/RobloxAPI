@@ -43,7 +43,7 @@ namespace RobloxApi
     {
         public static implicit operator int(Asset asset)
         {
-            return asset.AssetId;
+            return asset.ID;
         }
 
         public static implicit operator Asset(int assetId)
@@ -51,10 +51,16 @@ namespace RobloxApi
             return new Asset(assetId);
         }
 
+        public override string ToString()
+        {
+            return string.Format("RobloxAsset ({0}): ID: {1} Name: {2}", GetHashCode(), ID, Name);
+        }
+
         /// <summary>
         /// The ID of the Asset.
         /// </summary>
-        public int AssetId { get; internal set; }
+        [JsonProperty("AssetId")]
+        public int ID { get; internal set; }
         public int ProductId { get; internal set; }
         /// <summary>
         /// The name shown on the website.
@@ -149,7 +155,7 @@ namespace RobloxApi
         /// <returns>The asset downloaded as a string</returns>
         public async Task<string> DownloadAsString()
         {
-            return await HttpHelper.GetStringFromURL("https://assetgame.roblox.com/Asset/?id=" + AssetId);
+            return await HttpHelper.GetStringFromURL("https://assetgame.roblox.com/Asset/?id=" + ID);
         }
 
         /// <summary>
@@ -159,7 +165,7 @@ namespace RobloxApi
         /// <returns>Does the user id provided have the asset?</returns>
         public async Task<bool> DoesUserHave(int userId)
         {
-            return await HttpHelper.GetStringFromURL(string.Format("http://api.roblox.com/Ownership/HasAsset?userId={0}&assetId={1}", userId, AssetId)) == "true";
+            return await HttpHelper.GetStringFromURL(string.Format("http://api.roblox.com/Ownership/HasAsset?userId={0}&assetId={1}", userId, ID)) == "true";
         }
 
         /// <summary>
@@ -168,7 +174,7 @@ namespace RobloxApi
         /// <param name="assetId">The assetId to set.</param>
         public Asset(int assetId)
         {
-            AssetId = assetId;
+            ID = assetId;
         }
 
         /// <summary>
@@ -215,7 +221,7 @@ namespace RobloxApi
                     throw new ArgumentException("Size must not be Unknown.", "size");
             }
             
-            return await HttpHelper.GetStringFromURL(string.Format("https://www.roblox.com/Thumbs/RawAsset.ashx?assetId={0}&imageFormat=png&width={1}&height={2}", AssetId, sizeStr.Split('x')[0], sizeStr.Split('x')[1]));
+            return await HttpHelper.GetStringFromURL(string.Format("https://www.roblox.com/Thumbs/RawAsset.ashx?assetId={0}&imageFormat=png&width={1}&height={2}", ID, sizeStr.Split('x')[0], sizeStr.Split('x')[1]));
         }
 
         /// <summary>
@@ -245,55 +251,62 @@ namespace RobloxApi
         /// <returns>Asset filled with information</returns>
         public static async Task<Asset> FromID(int assetId)
         {
-            string data = await HttpHelper.GetStringFromURL(string.Format("https://api.roblox.com/marketplace/productinfo?assetId={0}", assetId));
-            JObject obj = JObject.Parse(data);
-
-            Asset asset = new Asset();
-            asset.AssetId = (int)obj["AssetId"];
-            asset.ProductId = (int?)obj["ProductId"] ?? -1;
-
-            asset.Name = (string)obj["Name"];
-            asset.Description = (string)obj["Description"];
-
-            asset.AssetType = (EAssetType)(int)obj["AssetTypeId"]; // eww.
-
-            string creatorType = (string)obj["Creator"]["CreatorType"];
-
-            if (creatorType == "Group")
+            try
             {
-                Group group = await Group.FromID((int)obj["Creator"]["CreatorTargetId"]);
-                asset.CreatorType = ECreatorType.Group;
+                string data = await HttpHelper.GetStringFromURL(string.Format("https://api.roblox.com/marketplace/productinfo?assetId={0}", assetId));
+                JObject obj = JObject.Parse(data);
+
+                Asset asset = new Asset();
+                asset.ID = (int)obj["AssetId"];
+                asset.ProductId = (int?)obj["ProductId"] ?? -1;
+
+                asset.Name = (string)obj["Name"];
+                asset.Description = (string)obj["Description"];
+
+                asset.AssetType = (EAssetType)(int)obj["AssetTypeId"]; // eww.
+
+                string creatorType = (string)obj["Creator"]["CreatorType"];
+
+                if (creatorType == "Group")
+                {
+                    Group group = await Group.FromID((int)obj["Creator"]["CreatorTargetId"]);
+                    asset.CreatorType = ECreatorType.Group;
+                }
+                else
+                {
+                    User user = new User();
+                    user.ID = (int)obj["Creator"]["CreatorTargetId"];
+                    user.Username = (string)obj["Creator"]["Name"];
+                    asset.CreatorType = ECreatorType.User;
+                }
+
+                asset.IconImageAssetId = (int?)obj["IconImageAssetId"] ?? 0;
+
+                asset.Created = DateTime.Parse((string)obj["Created"]);
+                asset.Updated = DateTime.Parse((string)obj["Updated"]);
+
+                asset.PriceInRobux = (int?)obj["PriceInRobux"] ?? 0; // We don't use PriceInTickets since Tickets are gone from roblox.
+                asset.Sales = (int?)obj["Sales"] ?? 0;
+
+                asset.IsNew = (bool?)obj["IsNew"] ?? false;
+                asset.IsForSale = (bool?)obj["IsForSale"] ?? false;
+                asset.IsPublicDomain = (bool?)obj["IsPublicDomain"] ?? false;
+                asset.IsLimited = (bool?)obj["IsLimited"] ?? false;
+                asset.IsLimitedUnique = (bool?)obj["IsLimitedUnique"] ?? false;
+                if (obj.Value<int?>("Remaining") != null)
+                    asset.Remaining = (int)obj["Remaining"];
+                else
+                    asset.Remaining = -1; // Infinite amount of this item.
+
+                asset.MinimumMembershipLevel = (EMembershipLevel)(int)obj["MinimumMembershipLevel"];
+                asset.Is13OrOver = ((int?)obj["ContentRatingTypeId"] == 1);
+
+                return asset;
             }
-            else
+            catch(WebException)
             {
-                User user = new User();
-                user.ID = (int)obj["Creator"]["CreatorTargetId"];
-                user.Username = (string)obj["Creator"]["Name"];
-                asset.CreatorType = ECreatorType.User;
+                return null;
             }
-
-            asset.IconImageAssetId = (int?)obj["IconImageAssetId"] ?? 0;
-
-            asset.Created = DateTime.Parse((string)obj["Created"]);
-            asset.Updated = DateTime.Parse((string)obj["Updated"]);
-
-            asset.PriceInRobux = (int?)obj["PriceInRobux"] ?? 0; // We don't use PriceInTickets since Tickets are gone from roblox.
-            asset.Sales = (int?)obj["Sales"] ?? 0;
-
-            asset.IsNew = (bool?)obj["IsNew"] ?? false;
-            asset.IsForSale = (bool?)obj["IsForSale"] ?? false;
-            asset.IsPublicDomain = (bool?)obj["IsPublicDomain"] ?? false;
-            asset.IsLimited = (bool?)obj["IsLimited"] ?? false;
-            asset.IsLimitedUnique = (bool?)obj["IsLimitedUnique"] ?? false;
-            if (obj.Value<int?>("Remaining") != null)
-                asset.Remaining = (int)obj["Remaining"];
-            else
-                asset.Remaining = -1; // Infinite amount of this item.
-
-            asset.MinimumMembershipLevel = (EMembershipLevel)(int)obj["MinimumMembershipLevel"];
-            asset.Is13OrOver = ((int?)obj["ContentRatingTypeId"] == 1);
-
-            return asset;
         }
     }
 }

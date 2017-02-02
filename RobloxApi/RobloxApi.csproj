@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Clan.cs" />
     <Compile Include="EAssetType.cs" />
     <Compile Include="EMembershipLevel.cs" />
     <Compile Include="ESearchCategory.cs" />

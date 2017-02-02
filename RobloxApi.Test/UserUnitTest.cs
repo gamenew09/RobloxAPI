@@ -24,7 +24,7 @@ namespace RobloxApi.Test
 
             Assert.IsNotNull(user);
 
-            bool canManageAsset = user.CanManageAsset(556024903).WaitForResult(TestConstants.MaxMilisecondTimeout);
+            bool canManageAsset = user.CanManageAsset(TestConstants.TestAssetId).WaitForResult(TestConstants.MaxMilisecondTimeout);
 
 #pragma warning disable 0162
 
@@ -35,7 +35,28 @@ namespace RobloxApi.Test
 
 #pragma warning restore 0162
 
-            Console.WriteLine("Can \"{0}\" managet asset {1}? {2}", user, 2032622, canManageAsset);
+            Console.WriteLine("Can \"{0}\" managet asset {1}? {2}", user, TestConstants.TestAssetId, canManageAsset);
+        }
+
+        [TestMethod]
+        public void UserOwnsAsset()
+        {
+            User user = User.FromID(TestConstants.TestUserId).WaitForResult(TestConstants.MaxMilisecondTimeout);
+
+            Assert.IsNotNull(user);
+
+            bool ownsAsset = user.OwnsAsset(TestConstants.TestAssetId).WaitForResult(TestConstants.MaxMilisecondTimeout);
+
+#pragma warning disable 0162
+
+            if (TestConstants.ExpectedAssetOwnResult)
+                Assert.IsTrue(ownsAsset);
+            else
+                Assert.IsFalse(ownsAsset);
+
+#pragma warning restore 0162
+
+            Console.WriteLine("Does \"{0}\" own asset {1}? {2}", user, TestConstants.TestAssetId, ownsAsset);
         }
 
         [TestMethod]

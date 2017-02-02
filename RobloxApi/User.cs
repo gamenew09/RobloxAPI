@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Collections;
 using static RobloxApi.FriendList;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace RobloxApi
 {
@@ -78,7 +79,7 @@ namespace RobloxApi
         /// <returns>Can this user manage the asset?</returns>
         public async Task<bool> CanManageAsset(Asset asset)
         {
-            string data = await HttpHelper.GetStringFromURL(string.Format("https://api.roblox.com/users/{0}/canmanage/{1}", ID, asset.AssetId));
+            string data = await HttpHelper.GetStringFromURL(string.Format("https://api.roblox.com/users/{0}/canmanage/{1}", ID, asset.ID));
             JObject obj = JObject.Parse(data);
             return obj.Value<bool?>("CanManage") ?? false;
         }
@@ -90,22 +91,65 @@ namespace RobloxApi
         /// <returns>The user object</returns>
         public static async Task<User> FromID(int userId)
         {
-            string data = await HttpHelper.GetStringFromURL(string.Format("https://api.roblox.com/users/{0}", userId));
+            try
+            {
+                string data = await HttpHelper.GetStringFromURL(string.Format("https://api.roblox.com/users/{0}", userId));
+
+                JObject obj = JObject.Parse(data);
+
+                User user = new User();
+                user.ID = userId;
+
+                await user.Update();
+
+                return user;
+            }
+            catch (WebException)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets the clan the user is in, returns null if the user is not in a clan.
+        /// </summary>
+        /// <returns>Gets the clan the user is in, returns null if the user is not in a clan.</returns>
+        public async Task<Clan> GetClan()
+        {
+            string data = await HttpHelper.GetStringFromURL(string.Format("https://api.roblox.com/clans/get-by-user?userId={0}", ID));
 
             JObject obj = JObject.Parse(data);
 
-            User user = new User();
-            user.ID = userId;
+            if(obj.Value<int>("Id") == 0) // User is not in a clan.
+            {
+                return null;
+            }
 
-            await user.Update();
+            Clan clan = new Clan();
+            clan.ID = obj.Value<int>("Id");
 
-            return user;
+            clan.Name = obj.Value<string>("Name");
+
+            clan.EmblemAsset = await Asset.FromID(obj.Value<int>("EmblemAssetId"));
+            return clan;
         }
 
         private FriendList _FriendList;
 
         /// <summary>
-        /// Friends List
+        /// Checks if the user owns the asset provided.
+        /// </summary>
+        /// <param name="asset">The asset to check.</param>
+        /// <returns>Does the user own the asset?</returns>
+        public async Task<bool> OwnsAsset(Asset asset)
+        {
+            // https://api.roblox.com/ownership/hasasset?userId={0}&assetId={1}
+            string data = await HttpHelper.GetStringFromURL(string.Format("https://api.roblox.com/ownership/hasasset?userId={0}&assetId={1}", ID, asset.ID));
+            return data.ToLower() == "true";
+        }
+
+        /// <summary>
+        /// Friends List for this user.
         /// </summary>
         public FriendList FriendList
         {
