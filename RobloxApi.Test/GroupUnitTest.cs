@@ -88,6 +88,22 @@ namespace RobloxApi.Test
             }
         }
 
+        [TestMethod]
+        public void IsUserInGroup()
+        {
+            Group group = Group.FromID(1242521).WaitForResult(TestConstants.MaxMilisecondTimeout);
+
+            Assert.IsNotNull(group);
+
+            User user = User.FromID(5762824).WaitForResult(TestConstants.MaxMilisecondTimeout);
+
+            bool isUserInGroup = group.IsUserInGroup(user).WaitForResult(TestConstants.MaxMilisecondTimeout);
+
+            Assert.IsTrue(isUserInGroup);
+
+            Console.WriteLine("Is {0} in {1}? {2}", user, group, isUserInGroup);
+        }
+
     }
 
     public static class AsyncHelper

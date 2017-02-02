@@ -96,6 +96,15 @@ namespace RobloxApi
             return string.Format("RobloxGroup ({0}): ID: {1} Name: {2}", GetHashCode(), ID, Name);
         }
 
+        public async Task<bool> IsUserInGroup(User user)
+        {
+            try
+            {
+                return (await HttpHelper.GetStringFromURL(string.Format("https://assetgame.roblox.com/Game/LuaWebService/HandleSocialRequest.ashx?method=IsInGroup&playerid={0}&groupid={1}", user.ID, ID))).Contains("true");
+            }
+            catch { return false; }
+        }
+
         /// <summary>
         /// Gets a group object using the groupId.
         /// </summary>

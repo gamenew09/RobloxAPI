@@ -41,12 +41,12 @@ namespace RobloxApi
 
     public class Asset
     {
-        public static implicit operator int(Asset asset)
+        public static explicit operator int(Asset asset)
         {
             return asset.ID;
         }
 
-        public static implicit operator Asset(int assetId)
+        public static explicit operator Asset(int assetId)
         {
             return new Asset(assetId);
         }
@@ -242,6 +242,31 @@ namespace RobloxApi
             await resp.GetResponseStream().ReadAsync(imageBuffer, 0, imageBuffer.Length);
 
             return imageBuffer;
+        }
+
+        /// <summary>
+        /// If this asset is a package, get the assets within the package.
+        /// </summary>
+        /// <returns>Assets within this package.</returns>
+        public async Task<Asset[]> GetAssetsInPackage()
+        {
+            try
+            {
+                string data = await HttpHelper.GetStringFromURL(string.Format("http://assetgame.roblox.com/Game/GetAssetIdsForPackageId?packageId={0}", ID));
+
+                if (data.StartsWith("{\""))
+                    return null;
+
+                JArray obj = JArray.Parse(data);
+
+                List<Asset> assets = new List<Asset>();
+
+                foreach (JToken tok in obj)
+                    assets.Add(await FromID(tok.Value<int>()));
+
+                return assets.ToArray();
+            }
+            catch { return null; }
         }
 
         /// <summary>

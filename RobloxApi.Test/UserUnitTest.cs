@@ -24,7 +24,7 @@ namespace RobloxApi.Test
 
             Assert.IsNotNull(user);
 
-            bool canManageAsset = user.CanManageAsset(TestConstants.TestAssetId).WaitForResult(TestConstants.MaxMilisecondTimeout);
+            bool canManageAsset = user.CanManageAsset((Asset)TestConstants.TestAssetId).WaitForResult(TestConstants.MaxMilisecondTimeout);
 
 #pragma warning disable 0162
 
@@ -45,7 +45,7 @@ namespace RobloxApi.Test
 
             Assert.IsNotNull(user);
 
-            bool ownsAsset = user.OwnsAsset(TestConstants.TestAssetId).WaitForResult(TestConstants.MaxMilisecondTimeout);
+            bool ownsAsset = user.OwnsAsset((Asset)TestConstants.TestAssetId).WaitForResult(TestConstants.MaxMilisecondTimeout);
 
 #pragma warning disable 0162
 
@@ -99,6 +99,28 @@ namespace RobloxApi.Test
             }
 
             Console.WriteLine("Total Pages: {0} Total Count: {1}", pageIndex, entryCount);
+        }
+
+        [TestMethod]
+        public void IsUserFriendsWith()
+        {
+            User user = User.FromID(TestConstants.TestUserId).WaitForResult(TestConstants.MaxMilisecondTimeout);
+
+            Assert.IsNotNull(user);
+
+            User friendTestUser = User.FromID(5762824).WaitForResult(TestConstants.MaxMilisecondTimeout);
+
+            Console.WriteLine("User {0} friends with {1}? {2}", user, friendTestUser, user.IsFriendsWith(friendTestUser).WaitForResult(TestConstants.MaxMilisecondTimeout));
+        }
+
+        [TestMethod]
+        public void GetUserMembership()
+        {
+            User user = User.FromID(TestConstants.TestUserId).WaitForResult(TestConstants.MaxMilisecondTimeout);
+
+            Assert.IsNotNull(user);
+
+            Console.WriteLine("User {0}'s membership level: {1}", user.Username, user.GetMembershipLevel().WaitForResult(TestConstants.MaxMilisecondTimeout));
         }
     }
 }

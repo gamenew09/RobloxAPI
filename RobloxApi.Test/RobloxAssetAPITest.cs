@@ -23,6 +23,28 @@ namespace RobloxApi.Test
         }
 
         [TestMethod]
+        public void GetPackageContents()
+        {
+            Asset asset = Asset.FromID(27133145).WaitForResult(TestConstants.MaxMilisecondTimeout); // Places are assets.
+
+            Assert.IsNotNull(asset);
+            Assert.IsTrue(asset.AssetType == EAssetType.Package);
+
+            Console.WriteLine("Package Contents of {0}:", asset.ID);
+
+            Asset[] assets = (asset.GetAssetsInPackage().WaitForResult(TestConstants.MaxMilisecondTimeout));
+
+            Assert.IsNotNull(assets.Length);
+            Assert.IsTrue(assets.Length > 0);
+
+            foreach (Asset packageAsset in assets)
+            {
+                Assert.IsTrue(packageAsset.ID > 0);
+                Console.WriteLine("Part: {0}", packageAsset.ID);
+            }
+        }
+
+        [TestMethod]
         public void GetPlaceThumbnail()
         {
             // Get place asset.

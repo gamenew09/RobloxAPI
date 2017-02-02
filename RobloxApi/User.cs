@@ -111,6 +111,51 @@ namespace RobloxApi
         }
 
         /// <summary>
+        /// Gets the membership level of this user. 
+        /// <para>See <see cref="EMembershipLevel"/> </para>
+        /// </summary>
+        /// <returns></returns>
+        public async Task<EMembershipLevel> GetMembershipLevel()
+        {
+            // https://www.roblox.com/Thumbs/BCOverlay.ashx?username=Shedletsky
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(string.Format("https://www.roblox.com/Thumbs/BCOverlay.ashx?username={0}", Username));
+            req.AllowAutoRedirect = true; // We need this so we can get the url of the overlay image.
+
+            HttpWebResponse resp = (HttpWebResponse)await req.GetResponseAsync();
+
+            if (resp.ResponseUri.OriginalString == "https://static.rbxcdn.com/images/empty.png")
+                return EMembershipLevel.None;
+
+            string image = resp.ResponseUri.OriginalString.Substring(47).Replace("Only.png", "");
+
+            switch (image)
+            {
+                case "bc":
+                    return EMembershipLevel.BuildersClub;
+                case "tbc":
+                    return EMembershipLevel.TurboBuildersClub;
+                case "obc":
+                    return EMembershipLevel.OutrageousBuildersClub;
+                default:
+                    return EMembershipLevel.None;
+            }
+        }
+
+        /// <summary>
+        /// Is the user friends with another user specified?
+        /// </summary>
+        /// <param name="user">The user to check our friendship with.</param>
+        /// <returns>Is this user friends with the specified user?</returns>
+        public async Task<bool> IsFriendsWith(User user)
+        {
+            try
+            {
+                return (await HttpHelper.GetStringFromURL(string.Format("https://assetgame.roblox.com/Game/LuaWebService/HandleSocialRequest.ashx?method=IsFriendsWith&playerId={0}&userId={1}", ID, user.ID))).Contains("true");
+            }
+            catch { return false; }
+        }
+
+        /// <summary>
         /// Gets the clan the user is in, returns null if the user is not in a clan.
         /// </summary>
         /// <returns>Gets the clan the user is in, returns null if the user is not in a clan.</returns>
