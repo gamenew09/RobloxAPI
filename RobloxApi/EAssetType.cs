@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace RobloxApi
 {
+    /// <summary>
+    /// Asset Types as seen on http://wiki.roblox.com/index.php?title=Asset_types.
+    /// </summary>
     public enum EAssetType : int
     {
         Image = 1,
@@ -15,7 +18,7 @@ namespace RobloxApi
         Lua,
         HTML,
         Text,
-        Hat	,
+        Hat,
         Place,
         Model,
         Shirt,	

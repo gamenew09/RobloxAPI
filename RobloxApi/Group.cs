@@ -11,6 +11,9 @@ namespace RobloxApi
     public class Group
     {
 
+        /// <summary>
+        /// The ID of the group.
+        /// </summary>
         [JsonProperty("Id")]
         public int ID
         {
@@ -18,6 +21,9 @@ namespace RobloxApi
             private set;
         }
 
+        /// <summary>
+        /// Roles in a group as an array.
+        /// </summary>
         [JsonProperty("Roles")]
         public GroupRole[] Roles
         {
@@ -25,6 +31,9 @@ namespace RobloxApi
             private set;
         }
         
+        /// <summary>
+        /// The name of the group as shown on the website.
+        /// </summary>
         [JsonProperty("Name")]
         public string Name
         {
@@ -32,13 +41,19 @@ namespace RobloxApi
             private set;
         }
 
+        /// <summary>
+        /// The owner of the group as a User, will be null if no one owns the group.
+        /// </summary>
         [JsonProperty("Owner")]
         public User Owner
         {
             get;
             private set;
         }
-
+        
+        /// <summary>
+        /// The icon of the group.
+        /// </summary>
         [JsonProperty("EmblemUrl")]
         public string EmblemUrl
         {
@@ -46,6 +61,9 @@ namespace RobloxApi
             private set;
         }
 
+        /// <summary>
+        /// The description of the group as shown on the website. Can be empty.
+        /// </summary>
         [JsonProperty("Description")]
         public string Description
         {
@@ -63,6 +81,16 @@ namespace RobloxApi
             ID = groupId;
         }
 
+        public override string ToString()
+        {
+            return string.Format("RobloxGroup ({0}): ID: {1} Name: {2}", GetHashCode(), ID, Name);
+        }
+
+        /// <summary>
+        /// Gets a group object using the groupId.
+        /// </summary>
+        /// <param name="groupId">Group to get</param>
+        /// <returns>The group object</returns>
         public static async Task<Group> FromID(int groupId)
         {
             Group group = new Group();
@@ -115,6 +143,10 @@ namespace RobloxApi
             return JsonConvert.DeserializeObject<GroupResult_t>(data);
         }
 
+        /// <summary>
+        /// Gets a list of Allied Groups.
+        /// </summary>
+        /// <returns>List of allied groups.</returns>
         public async Task<Group[]> GetAllies()
         {
             int c = 1;
@@ -139,6 +171,10 @@ namespace RobloxApi
             return JsonConvert.DeserializeObject<GroupResult_t>(data);
         }
 
+        /// <summary>
+        /// Gets a list of Enemy Groups.
+        /// </summary>
+        /// <returns>List of Enemy groups.</returns>
         public async Task<Group[]> GetEnemies()
         {
             int c = 1;
@@ -154,16 +190,32 @@ namespace RobloxApi
             return allies.ToArray();
         }
 
+        public static explicit operator int(Group group)
+        {
+            return group.ID;
+        }
+
+        public static explicit operator Group(int groupId)
+        {
+            return new Group(groupId);
+        }
+
     }
 
     public class GroupRole
     {
+        /// <summary>
+        /// The name of the group role.
+        /// </summary>
         public string Name
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// The rank number shown in the group manager.
+        /// </summary>
         public int Rank
         {
             private set;

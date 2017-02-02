@@ -11,7 +11,7 @@ namespace RobloxApi.Test
         [TestMethod]
         public void GetGroupByID()
         {
-            Group group = Group.FromID(1242521).WaitForResult(); // Ruby Studio
+            Group group = Group.FromID(TestConstants.TestGroupId).WaitForResult(TestConstants.MaxMilisecondTimeout); // Ruby Studio
 
             Assert.IsNotNull(group);
 
@@ -25,7 +25,7 @@ namespace RobloxApi.Test
         [TestMethod]
         public void GetGroupRoles()
         {
-            Group group = Group.FromID(1242521).WaitForResult(); // Ruby Studio
+            Group group = Group.FromID(TestConstants.TestGroupId).WaitForResult(TestConstants.MaxMilisecondTimeout); // Ruby Studio
 
             Assert.IsTrue(group.Roles.Length > 0);
 
@@ -40,9 +40,9 @@ namespace RobloxApi.Test
         [TestMethod]
         public void GetGroupAllies()
         {
-            Group group = Group.FromID(164852).WaitForResult(); // Dayren Fan Club!
+            Group group = Group.FromID(TestConstants.TestGroupId).WaitForResult(TestConstants.MaxMilisecondTimeout); // Dayren Fan Club!
 
-            Group[] allies = group.GetAllies().WaitForResult();
+            Group[] allies = group.GetAllies().WaitForResult(TestConstants.MaxMilisecondTimeout);
 
             Assert.IsTrue(allies.Length > 0);
 
@@ -65,9 +65,9 @@ namespace RobloxApi.Test
         [TestMethod]
         public void GetGroupEnemies()
         {
-            Group group = Group.FromID(2722461).WaitForResult(); // War Clans of ROBLOX
+            Group group = Group.FromID(TestConstants.TestGroupId).WaitForResult(TestConstants.MaxMilisecondTimeout); // War Clans of ROBLOX
 
-            Group[] enemies = group.GetEnemies().WaitForResult();
+            Group[] enemies = group.GetEnemies().WaitForResult(TestConstants.MaxMilisecondTimeout);
 
             Assert.IsTrue(enemies.Length > 0);
 
@@ -95,6 +95,12 @@ namespace RobloxApi.Test
         public static T WaitForResult<T>(this Task<T> t)
         {
             t.Wait();
+            return t.Result;
+        }
+
+        public static T WaitForResult<T>(this Task<T> t, int timeoutMS)
+        {
+            t.Wait(timeoutMS);
             return t.Result;
         }
     }

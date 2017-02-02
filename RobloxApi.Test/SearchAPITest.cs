@@ -13,16 +13,14 @@ namespace RobloxApi.Test
         [TestMethod]
         public void SearchCatalog()
         {
-            Task<List<SearchResult>> results = RobloxAPI.Search("test", ESearchCategory.AllInCatalog);
+            List<SearchResult> results = RobloxAPI.Search(TestConstants.TestSearchKeyword, ESearchCategory.AllInCatalog).WaitForResult(TestConstants.MaxMilisecondTimeout);
 
-            results.Wait(10000);
+            Assert.IsNotNull(results);
 
-            Assert.IsNotNull(results.Result);
-
-            Assert.IsTrue(results.Result.Count != 0);
+            Assert.IsTrue(results.Count != 0);
 
             Type ty = typeof(SearchResult);
-            foreach (SearchResult res in results.Result)
+            foreach (SearchResult res in results)
             {
                 foreach(PropertyInfo info in ty.GetProperties())
                 {
@@ -32,6 +30,26 @@ namespace RobloxApi.Test
             }
         }
 
-        
+        [TestMethod]
+        public void SearchCatalogAsAssets()
+        {
+            Asset[] results = RobloxAPI.SearchAssets(TestConstants.TestSearchKeyword, ESearchCategory.AllInCatalog).WaitForResult(TestConstants.MaxMilisecondTimeout);
+
+            Assert.IsNotNull(results);
+
+            Assert.IsTrue(results.Length > 0);
+
+            Type ty = typeof(Asset);
+            foreach (Asset res in results)
+            {
+                foreach (PropertyInfo info in ty.GetProperties())
+                {
+                    Console.WriteLine("{0} = {1}", info.Name, info.GetGetMethod().Invoke(res, new object[] { }));
+                }
+                Console.WriteLine("---");
+            }
+        }
+
+
     }
 }

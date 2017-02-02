@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 namespace RobloxApi
 {
 
+    /// <summary>
+    /// Type of creator.
+    /// </summary>
     public enum ECreatorType
     {
         Unknown = -1,
@@ -18,6 +21,9 @@ namespace RobloxApi
         Group,
     }
 
+    /// <summary>
+    /// Size of thumbnails supported by ROBLOX.
+    /// </summary>
     public enum EThumbnailSize
     {
         Unknown = -1,
@@ -45,27 +51,91 @@ namespace RobloxApi
             return new Asset(assetId);
         }
 
+        /// <summary>
+        /// The ID of the Asset.
+        /// </summary>
         public int AssetId { get; internal set; }
         public int ProductId { get; internal set; }
+        /// <summary>
+        /// The name shown on the website.
+        /// </summary>
         public string Name { get; internal set; }
+        /// <summary>
+        /// The description shown on the website.
+        /// </summary>
         public string Description { get; internal set; }
+        /// <summary>
+        /// What type of asset is this?
+        /// <see cref="EAssetType"/>
+        /// </summary>
         public EAssetType AssetType { get; internal set; }
-        public int CreatorID { get; internal set; } // Use "User" eventually, might just use User.
+        /// <summary>
+        /// The creator, as a user, of the asset, will be null if it is a group that created this asset.
+        /// </summary>
+        public User UserCreator { get; internal set; }
+        /// <summary>
+        /// The creator, as a group, of the asset, will be null if it is a user that created this asset.
+        /// </summary>
+        public Group GroupCreator { get; internal set; }
+        /// <summary>
+        /// What type of creator made this? User or Group.
+        /// </summary>
         public ECreatorType CreatorType { get; internal set; }
+        /// <summary>
+        /// Game Icon Image?
+        /// </summary>
         public int IconImageAssetId { get; internal set; }
+        /// <summary>
+        /// When was this asset created?
+        /// </summary>
         public DateTime Created { get; internal set; }
+        /// <summary>
+        /// When was this asset last updated?
+        /// </summary>
         public DateTime Updated { get; internal set; }
+        /// <summary>
+        /// How much does this asset cost?
+        /// </summary>
         public int PriceInRobux { get; internal set; }
+
         // PriceInTickets is no longer used.
+
+        /// <summary>
+        /// How many times did this asset sell?
+        /// </summary>
         public int Sales { get; internal set; }
+        /// <summary>
+        /// Does the website consider this item as new?
+        /// </summary>
         public bool IsNew { get; internal set; }
+        /// <summary>
+        /// Is the item currently for sale?
+        /// </summary>
         public bool IsForSale { get; internal set; }
+        /// <summary>
+        /// Can the asset be opened in studio?
+        /// </summary>
         public bool IsPublicDomain { get; internal set; }
+        /// <summary>
+        /// Is the item limited?
+        /// </summary>
         public bool IsLimited { get; internal set; }
+        /// <summary>
+        /// Is the item limited unique? (limitedu)
+        /// </summary>
         public bool IsLimitedUnique { get; internal set; }
+        /// <summary>
+        /// How many of this item is remaining? This value is -1 if this has unlimited stock?
+        /// </summary>
         public int Remaining { get; internal set; }
+        /// <summary>
+        /// What is the minimum membership level to get this membership.
+        /// </summary>
         public EMembershipLevel MinimumMembershipLevel { get; internal set; }
         //public int ContentRatingTypeId { get; private set; }
+        /// <summary>
+        /// Is this asset only for 13 year olds and above?
+        /// </summary>
         public bool Is13OrOver { get; internal set; }
 
         public Asset()
@@ -101,6 +171,11 @@ namespace RobloxApi
             AssetId = assetId;
         }
 
+        /// <summary>
+        /// Gets the asset thumbnail url for a certain size.
+        /// </summary>
+        /// <param name="size">The size to get the thumbnail for.</param>
+        /// <returns>The thumbnail to the image with the size.</returns>
         public async Task<string> GetAssetImageURL(EThumbnailSize size)
         {
             string sizeStr = "";
@@ -143,6 +218,11 @@ namespace RobloxApi
             return await HttpHelper.GetStringFromURL(string.Format("https://www.roblox.com/Thumbs/RawAsset.ashx?assetId={0}&imageFormat=png&width={1}&height={2}", AssetId, sizeStr.Split('x')[0], sizeStr.Split('x')[1]));
         }
 
+        /// <summary>
+        /// Downloads the asset's thumbnail
+        /// </summary>
+        /// <param name="size"></param>
+        /// <returns></returns>
         public async Task<byte[]> GetAssetImage(EThumbnailSize size)
         {
             string url = await GetAssetImageURL(size);
@@ -179,12 +259,18 @@ namespace RobloxApi
 
             string creatorType = (string)obj["Creator"]["CreatorType"];
 
-            asset.CreatorID = (int)obj["Creator"]["CreatorTargetId"];
-
             if (creatorType == "Group")
+            {
+                Group group = await Group.FromID((int)obj["Creator"]["CreatorTargetId"]);
                 asset.CreatorType = ECreatorType.Group;
+            }
             else
+            {
+                User user = new User();
+                user.ID = (int)obj["Creator"]["CreatorTargetId"];
+                user.Username = (string)obj["Creator"]["Name"];
                 asset.CreatorType = ECreatorType.User;
+            }
 
             asset.IconImageAssetId = (int?)obj["IconImageAssetId"] ?? 0;
 

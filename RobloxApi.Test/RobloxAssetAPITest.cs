@@ -11,11 +11,7 @@ namespace RobloxApi.Test
         [TestMethod]
         public void GetPlaceAssetMadeByUser()
         {
-            Task<Asset> assetTask = Asset.FromID(1818); // Places are assets.
-
-            assetTask.Wait();
-
-            Asset asset = assetTask.Result;
+            Asset asset = Asset.FromID(TestConstants.TestAssetId).WaitForResult(TestConstants.MaxMilisecondTimeout); // Places are assets.
 
             Assert.IsNotNull(asset);
 
@@ -30,11 +26,7 @@ namespace RobloxApi.Test
         public void GetPlaceThumbnail()
         {
             // Get place asset.
-            Task<Asset> assetTask = Asset.FromID(1818); // Places are assets.
-
-            assetTask.Wait();
-
-            Asset asset = assetTask.Result;
+            Asset asset = Asset.FromID(TestConstants.TestAssetId).WaitForResult(TestConstants.MaxMilisecondTimeout); // Places are assets.
 
             Assert.IsNotNull(asset);
 

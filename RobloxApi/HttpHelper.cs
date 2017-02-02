@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RobloxApi
 {
-    public static class HttpHelper
+    internal static class HttpHelper
     {
 
         static bool _Inited = false;
@@ -26,6 +26,11 @@ namespace RobloxApi
             });
         }
 
+        /// <summary>
+        /// Gets a string response from the url provided.
+        /// </summary>
+        /// <param name="url">The url to request a string from.</param>
+        /// <returns>The string requested.</returns>
         public static async Task<string> GetStringFromURL(string url)
         {
             InitHttpHelper();

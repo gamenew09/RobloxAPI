@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace RobloxApi
 {
+    /// <summary>
+    /// Search Category
+    /// </summary>
     public enum ESearchCategory
     {
         AllInCatalog = 1, // Except Library Search.

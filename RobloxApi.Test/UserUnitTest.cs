@@ -10,11 +10,7 @@ namespace RobloxApi.Test
         [TestMethod]
         public void GetUser()
         {
-            Task<User> userTask = User.FromID(5762824);
-
-            userTask.Wait();
-
-            User user = userTask.Result;
+            User user = User.FromID(TestConstants.TestUserId).WaitForResult(TestConstants.MaxMilisecondTimeout);
 
             Assert.IsNotNull(user);
 
@@ -24,63 +20,52 @@ namespace RobloxApi.Test
         [TestMethod]
         public void UserCanManageAsset()
         {
-            Task<User> userTask = User.FromID(5762824);
-
-            userTask.Wait();
-
-            User user = userTask.Result;
+            User user = User.FromID(TestConstants.TestUserId).WaitForResult(TestConstants.MaxMilisecondTimeout);
 
             Assert.IsNotNull(user);
 
-            Task<bool> followingTask = user.CanManageAsset(556024903);
+            bool canManageAsset = user.CanManageAsset(556024903).WaitForResult(TestConstants.MaxMilisecondTimeout);
 
-            followingTask.Wait();
+#pragma warning disable 0162
 
-            Assert.IsTrue(followingTask.Result);
+            if (TestConstants.ExpectedManageResult)
+                Assert.IsTrue(canManageAsset);
+            else
+                Assert.IsFalse(canManageAsset);
 
-            Console.WriteLine("Is {0} following user ID {1}? {2}", user.Username, 2032622, followingTask.Result);
+#pragma warning restore 0162
+
+            Console.WriteLine("Can \"{0}\" managet asset {1}? {2}", user, 2032622, canManageAsset);
         }
 
         [TestMethod]
         public void GetFriendsPage1FromUser()
         {
-            Task<User> userTask = User.FromID(18586528);
-
-            userTask.Wait();
-
-            User user = userTask.Result;
+            User user = User.FromID(TestConstants.TestUserId).WaitForResult(TestConstants.MaxMilisecondTimeout);
 
             Assert.IsNotNull(user);
 
-            Task<FriendList.Page> followingTask = user.FriendList.Get(1);
+            FriendList.Page firstPage = user.FriendList.Get(1).WaitForResult(TestConstants.MaxMilisecondTimeout);
 
-            followingTask.Wait();
+            Assert.IsNotNull(firstPage);
 
-            Assert.IsNotNull(followingTask.Result);
-
-            Console.WriteLine("1st Page Count:{0}", followingTask.Result.Count);
+            Console.WriteLine("1st Page Count:{0}", firstPage);
         }
 
         [TestMethod]
         public void GetFriendsFromUser()
         {
-            Task<User> userTask = User.FromID(18586528);
-
-            userTask.Wait();
-
-            User user = userTask.Result;
+            User user = User.FromID(TestConstants.TestUserId).WaitForResult(TestConstants.MaxMilisecondTimeout);
 
             Assert.IsNotNull(user);
 
-            Task<FriendList.Page[]> followingTask = user.FriendList.GetPagesAsArray();
+            FriendList.Page[] friendPages = user.FriendList.GetPagesAsArray().WaitForResult(TestConstants.MaxMilisecondTimeout);
 
-            followingTask.Wait();
-
-            Assert.IsNotNull(followingTask.Result);
+            Assert.IsNotNull(friendPages);
 
             int pageIndex = 1;
             int entryCount = 0;
-            foreach(FriendList.Page page in followingTask.Result)
+            foreach(FriendList.Page page in friendPages)
             {
                 Console.WriteLine("Page {0}:", pageIndex);
                 pageIndex++;

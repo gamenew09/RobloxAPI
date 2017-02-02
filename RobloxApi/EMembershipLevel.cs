@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace RobloxApi
 {
+    /// <summary>
+    /// Membership Levels
+    /// </summary>
     public enum EMembershipLevel
     {
         None = 0,

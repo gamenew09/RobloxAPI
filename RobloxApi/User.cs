@@ -6,18 +6,27 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections;
 using static RobloxApi.FriendList;
+using Newtonsoft.Json;
 
 namespace RobloxApi
 {
     public class User
     {
 
+        /// <summary>
+        /// The ID of this user.
+        /// </summary>
+        [JsonProperty("Id")]
         public int ID
         {
             get;
             internal set;
         }
 
+        /// <summary>
+        /// The username of this user.
+        /// </summary>
+        [JsonProperty("Name")]
         public string Username
         {
             get;
@@ -34,6 +43,11 @@ namespace RobloxApi
             return new User(usrId);
         }
 
+        public override string ToString()
+        {
+            return string.Format("RobloxUser ({0}): ID: {1} Name: {2}", GetHashCode(), ID, Username);
+        }
+
         public User()
         {
 
@@ -44,6 +58,10 @@ namespace RobloxApi
             ID = userId;
         }
 
+        /// <summary>
+        /// Updates the Username.
+        /// </summary>
+        /// <returns></returns>
         public async Task Update()
         {
             string data = await HttpHelper.GetStringFromURL(string.Format("https://api.roblox.com/users/{0}", ID));
@@ -53,6 +71,11 @@ namespace RobloxApi
             Username = (string)obj["Username"];
         }
 
+        /// <summary>
+        /// Can this user manage the asset provided?
+        /// </summary>
+        /// <param name="asset">The asset to test.</param>
+        /// <returns>Can this user manage the asset?</returns>
         public async Task<bool> CanManageAsset(Asset asset)
         {
             string data = await HttpHelper.GetStringFromURL(string.Format("https://api.roblox.com/users/{0}/canmanage/{1}", ID, asset.AssetId));
@@ -60,6 +83,11 @@ namespace RobloxApi
             return obj.Value<bool?>("CanManage") ?? false;
         }
 
+        /// <summary>
+        /// Gets a user object from a user id.
+        /// </summary>
+        /// <param name="userId">The user id for the user</param>
+        /// <returns>The user object</returns>
         public static async Task<User> FromID(int userId)
         {
             string data = await HttpHelper.GetStringFromURL(string.Format("https://api.roblox.com/users/{0}", userId));
@@ -76,6 +104,9 @@ namespace RobloxApi
 
         private FriendList _FriendList;
 
+        /// <summary>
+        /// Friends List
+        /// </summary>
         public FriendList FriendList
         {
             get
