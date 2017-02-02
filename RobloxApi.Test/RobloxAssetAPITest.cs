@@ -50,7 +50,7 @@ namespace RobloxApi.Test
 
             // Get Asset Thumbnail as a byte array. (PNG)
 
-            Task<byte[]> imageData = asset.GetAssetPNGImage(EThumbnailSize.Square250x250);
+            Task<byte[]> imageData = asset.GetAssetImage(EThumbnailSize.Square250x250);
 
             imageData.Wait();
 

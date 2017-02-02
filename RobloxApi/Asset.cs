@@ -143,7 +143,7 @@ namespace RobloxApi
             return await HttpHelper.GetStringFromURL(string.Format("https://www.roblox.com/Thumbs/RawAsset.ashx?assetId={0}&imageFormat=png&width={1}&height={2}", AssetId, sizeStr.Split('x')[0], sizeStr.Split('x')[1]));
         }
 
-        public async Task<byte[]> GetAssetPNGImage(EThumbnailSize size)
+        public async Task<byte[]> GetAssetImage(EThumbnailSize size)
         {
             string url = await GetAssetImageURL(size);
 

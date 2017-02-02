@@ -3,6 +3,8 @@ RobloxApi
 
 A C# Class Library for accessing ROBLOX Web APIs. (Excluding login APIs and API routes that require to be logged in as a ROBLOX user.)
 
+Most of the methods in this Class Library uses [asynchronous Tasks](https://msdn.microsoft.com/en-us/library/mt674882.aspx).
+
 ## Unit Tests
 The solution does contain a Unit Test Project (RobloxApi.Test)
 
