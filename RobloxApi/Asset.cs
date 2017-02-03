@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using HtmlAgilityPack;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -147,6 +148,57 @@ namespace RobloxApi
         public Asset()
         {
 
+        }
+
+        public enum EItemExclusivity
+        {
+            None,
+
+            AppleIOS,
+            GooglePlay,
+            AmazonAppstore,
+
+            XboxOne,
+        }
+
+        /// <summary>
+        /// Gets what platform this item is for.
+        /// </summary>
+        /// <returns>What platform this item is for.</returns>
+        public async Task<EItemExclusivity> GetExclusivity()
+        {
+            try
+            {
+                string url = string.Format("https://www.roblox.com/catalog/{0}/{1}", ID, Name);
+
+                string data = await HttpHelper.GetStringFromURL(url);
+
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(data);
+
+                HtmlNode node = doc.DocumentNode
+                    .Descendants("div")
+                    .Where(d =>
+                        d.Attributes.Contains("class") &&
+                        d.Attributes["class"].Value.Contains("item-note") &&
+                        d.Attributes["class"].Value.Contains("has-price-label")
+                    ).FirstOrDefault();
+
+                if (node == null)
+                    return EItemExclusivity.None;
+
+                if (node.InnerText.Contains("Google Play"))
+                    return EItemExclusivity.GooglePlay;
+                if (node.InnerText.Contains("Xbox One"))
+                    return EItemExclusivity.XboxOne;
+                if (node.InnerText.Contains("Amazon"))
+                    return EItemExclusivity.AmazonAppstore;
+                if (node.InnerText.ToLower().Contains("ios"))
+                    return EItemExclusivity.AppleIOS;
+
+                return EItemExclusivity.None;
+            }
+            catch { return EItemExclusivity.None; }
         }
 
         /// <summary>

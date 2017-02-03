@@ -23,6 +23,16 @@ namespace RobloxApi.Test
         }
 
         [TestMethod]
+        public void GetExclusiveAsset()
+        {
+            Asset asset = Asset.FromID(617605556).WaitForResult(TestConstants.MaxMilisecondTimeout); // Places are assets.
+
+            Assert.IsNotNull(asset);
+
+            Console.WriteLine("Exclusivity: {0}", asset.GetExclusivity().WaitForResult(TestConstants.MaxMilisecondTimeout));
+        }
+
+        [TestMethod]
         public void GetPackageContents()
         {
             Asset asset = Asset.FromID(27133145).WaitForResult(TestConstants.MaxMilisecondTimeout); // Places are assets.

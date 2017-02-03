@@ -258,6 +258,14 @@ namespace RobloxApi
             {
                 return GetEnumerator();
             }
+
+            public bool ContainsUserID(int userId)
+            {
+                foreach(Entry entry in _Entries)
+                    if (entry.User.ID == userId)
+                        return true;
+                return false;
+            }
         }
 
         public class Entry
@@ -273,12 +281,18 @@ namespace RobloxApi
                 return entry.User.ID;
             }
 
+            /// <summary>
+            /// The user that is friends with another user.
+            /// </summary>
             public User User
             {
                 get;
                 private set;
             }
 
+            /// <summary>
+            /// Was the user online as of the friends being refreshed?
+            /// </summary>
             public bool IsOnline
             {
                 get;

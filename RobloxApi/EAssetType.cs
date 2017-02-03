@@ -16,26 +16,35 @@ namespace RobloxApi
         Audio = 3,
         Mesh = 4,
         Lua = 5,
+
         Hat = 8,
         Place = 9,
         Model = 10,
         Shirt = 11,
         Pants = 12,
         Decal = 13,
+
         Head = 17,
         Face = 18,
         Gear = 19,
+
         Badge = 21,
+
         Animation = 24,
+
         Torso = 27,
         RightArm = 28,
         LeftArm = 29,
         LeftLeg = 30,
         RightLeg = 31,
         Package = 32,
+
         GamePass = 34,
+
         Plugin = 38,
+
         MeshPart = 40,
+
         HairAccessory = 41,
         FaceAccessory = 42,
         NeckAccessory = 43,
