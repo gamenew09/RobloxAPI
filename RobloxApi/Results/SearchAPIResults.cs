@@ -52,5 +52,12 @@ namespace RobloxApi.Results
         public int MinimumMembershipLevel { get; set; }
         public object OffSaleDeadline { get; set; }
         public int ProductId { get; set; }
+
+        public async Task<Asset> ToAsset()
+        {
+            if (AssetId == 0)
+                return null;
+            return await Asset.FromID(AssetId);
+        }
     }
 }

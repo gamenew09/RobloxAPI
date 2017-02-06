@@ -10,117 +10,139 @@ namespace RobloxApi.Test
         [TestMethod]
         public void GetUser()
         {
-            User user = User.FromID(TestConstants.TestUserId).WaitForResult(TestConstants.MaxMilisecondTimeout);
+            Task.Run(async () =>
+            {
+                User user = await User.FromID(TestConstants.TestUserId);
 
-            Assert.IsNotNull(user);
+                Assert.IsNotNull(user);
 
-            Console.WriteLine("Id: {0} Username: {1}", user.ID, user.Username);
+                Console.WriteLine("Id: {0} Username: {1}", user.ID, user.Username);
+            }).Wait(TestConstants.MaxMilisecondTimeout);
+            
         }
 
         [TestMethod]
         public void UserCanManageAsset()
         {
-            User user = User.FromID(TestConstants.TestUserId).WaitForResult(TestConstants.MaxMilisecondTimeout);
+            Task.Run(async () =>
+            {
+                User user = await User.FromID(TestConstants.TestUserId);
 
-            Assert.IsNotNull(user);
+                Assert.IsNotNull(user);
 
-            bool canManageAsset = user.CanManageAsset((Asset)TestConstants.TestAssetId).WaitForResult(TestConstants.MaxMilisecondTimeout);
+                bool canManageAsset = await user.CanManageAsset((Asset)TestConstants.TestAssetId);
 
 #pragma warning disable 0162
 
-            if (TestConstants.ExpectedManageResult)
-                Assert.IsTrue(canManageAsset);
-            else
-                Assert.IsFalse(canManageAsset);
+                if (TestConstants.ExpectedManageResult)
+                    Assert.IsTrue(canManageAsset);
+                else
+                    Assert.IsFalse(canManageAsset);
 
 #pragma warning restore 0162
 
-            Console.WriteLine("Can \"{0}\" managet asset {1}? {2}", user, TestConstants.TestAssetId, canManageAsset);
+                Console.WriteLine("Can \"{0}\" managet asset {1}? {2}", user, TestConstants.TestAssetId, canManageAsset);
+            }).Wait(TestConstants.MaxMilisecondTimeout);
         }
 
         [TestMethod]
         public void UserOwnsAsset()
         {
-            User user = User.FromID(TestConstants.TestUserId).WaitForResult(TestConstants.MaxMilisecondTimeout);
+            Task.Run(async () =>
+            {
+                User user = await User.FromID(TestConstants.TestUserId);
 
-            Assert.IsNotNull(user);
+                Assert.IsNotNull(user);
 
-            bool ownsAsset = user.OwnsAsset((Asset)TestConstants.TestAssetId).WaitForResult(TestConstants.MaxMilisecondTimeout);
+                bool ownsAsset = await user.OwnsAsset((Asset)TestConstants.TestAssetId);
 
 #pragma warning disable 0162
 
-            if (TestConstants.ExpectedAssetOwnResult)
-                Assert.IsTrue(ownsAsset);
-            else
-                Assert.IsFalse(ownsAsset);
+                if (TestConstants.ExpectedAssetOwnResult)
+                    Assert.IsTrue(ownsAsset);
+                else
+                    Assert.IsFalse(ownsAsset);
 
 #pragma warning restore 0162
 
-            Console.WriteLine("Does \"{0}\" own asset {1}? {2}", user, TestConstants.TestAssetId, ownsAsset);
+                Console.WriteLine("Does \"{0}\" own asset {1}? {2}", user, TestConstants.TestAssetId, ownsAsset);
+            }).Wait(TestConstants.MaxMilisecondTimeout);
         }
 
         [TestMethod]
         public void GetFriendsPage1FromUser()
         {
-            User user = User.FromID(TestConstants.TestUserId).WaitForResult(TestConstants.MaxMilisecondTimeout);
+            Task.Run(async () =>
+            {
+                User user = await User.FromID(TestConstants.TestUserId);
 
-            Assert.IsNotNull(user);
+                Assert.IsNotNull(user);
 
-            FriendList.Page firstPage = user.FriendList.Get(1).WaitForResult(TestConstants.MaxMilisecondTimeout);
+                FriendList.Page firstPage = await user.FriendList.Get(1);
 
-            Assert.IsNotNull(firstPage);
+                Assert.IsNotNull(firstPage);
 
-            Console.WriteLine("1st Page Count:{0}", firstPage);
+                Console.WriteLine("1st Page Count:{0}", firstPage);
+            }).Wait(TestConstants.MaxMilisecondTimeout);
         }
 
         [TestMethod]
         public void GetFriendsFromUser()
         {
-            User user = User.FromID(TestConstants.TestUserId).WaitForResult(TestConstants.MaxMilisecondTimeout);
-
-            Assert.IsNotNull(user);
-
-            FriendList.Page[] friendPages = user.FriendList.GetPagesAsArray().WaitForResult(TestConstants.MaxMilisecondTimeout);
-
-            Assert.IsNotNull(friendPages);
-
-            int pageIndex = 1;
-            int entryCount = 0;
-            foreach(FriendList.Page page in friendPages)
+            Task.Run(async () =>
             {
-                Console.WriteLine("Page {0}:", pageIndex);
-                pageIndex++;
-                foreach (FriendList.Entry entry in page)
-                {
-                    entryCount++;
-                    Console.WriteLine("User {0} ({1}). IsOnline: {2}", entry.User.Username, entry.User.ID, entry.IsOnline);
-                }
-                Console.WriteLine("----");
-            }
+                User user = await User.FromID(TestConstants.TestUserId);
 
-            Console.WriteLine("Total Pages: {0} Total Count: {1}", pageIndex, entryCount);
+                Assert.IsNotNull(user);
+
+                FriendList.Page[] friendPages = await user.FriendList.GetPagesAsArray();
+
+                Assert.IsNotNull(friendPages);
+
+                int pageIndex = 1;
+                int entryCount = 0;
+                foreach (FriendList.Page page in friendPages)
+                {
+                    Console.WriteLine("Page {0}:", pageIndex);
+                    pageIndex++;
+                    foreach (FriendList.Entry entry in page)
+                    {
+                        entryCount++;
+                        Console.WriteLine("User {0} ({1}). IsOnline: {2}", entry.User.Username, entry.User.ID, entry.IsOnline);
+                    }
+                    Console.WriteLine("----");
+                }
+
+                Console.WriteLine("Total Pages: {0} Total Count: {1}", pageIndex, entryCount);
+            }).Wait(TestConstants.MaxMilisecondTimeout);
         }
 
         [TestMethod]
         public void IsUserFriendsWith()
         {
-            User user = User.FromID(TestConstants.TestUserId).WaitForResult(TestConstants.MaxMilisecondTimeout);
+            Task.Run(async () =>
+            {
+                User user = await User.FromID(TestConstants.TestUserId);
 
-            Assert.IsNotNull(user);
+                Assert.IsNotNull(user);
 
-            User friendTestUser = User.FromID(5762824).WaitForResult(TestConstants.MaxMilisecondTimeout);
+                User friendTestUser = await User.FromID(5762824);
 
-            Console.WriteLine("User {0} friends with {1}? {2}", user, friendTestUser, user.IsFriendsWith(friendTestUser).WaitForResult(TestConstants.MaxMilisecondTimeout));
+                Console.WriteLine("User {0} friends with {1}? {2}", user, friendTestUser, await user.IsFriendsWith(friendTestUser));
+            }).Wait(TestConstants.MaxMilisecondTimeout);
         }
 
         [TestMethod]
         public void GetUserMembership()
         {
-            User user = User.FromID(TestConstants.TestUserId).WaitForResult(TestConstants.MaxMilisecondTimeout);
+            Task.Run(async () =>
+            {
+                User user = await User.FromID(TestConstants.TestUserId);
 
-            Assert.IsNotNull(user);
+                Assert.IsNotNull(user);
 
-            Console.WriteLine("User {0}'s membership level: {1}", user.Username, user.GetMembershipLevel().WaitForResult(TestConstants.MaxMilisecondTimeout));
+                Console.WriteLine("User {0}'s membership level: {1}", user.Username, await user.GetMembershipLevel());
+            }).Wait(TestConstants.MaxMilisecondTimeout);
         }
     }
 }

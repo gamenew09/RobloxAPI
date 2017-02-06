@@ -11,78 +11,85 @@ namespace RobloxApi.Test
         [TestMethod]
         public void GetPlaceAssetMadeByUser()
         {
-            Asset asset = Asset.FromID(TestConstants.TestAssetId).WaitForResult(TestConstants.MaxMilisecondTimeout); // Places are assets.
-
-            Assert.IsNotNull(asset);
-
-            Type ty = typeof(Asset);
-            foreach (PropertyInfo info in ty.GetProperties())
+            Task.Run(async () =>
             {
-                Console.WriteLine("{0} = {1}", info.Name, info.GetGetMethod().Invoke(asset, new object[] { }));
-            }
+                Asset asset = await Asset.FromID(TestConstants.TestAssetId); // Places are assets.
+
+                Assert.IsNotNull(asset);
+
+                Type ty = typeof(Asset);
+                foreach (PropertyInfo info in ty.GetProperties())
+                {
+                    Console.WriteLine("{0} = {1}", info.Name, info.GetGetMethod().Invoke(asset, new object[] { }));
+                }
+            }).Wait(TestConstants.MaxMilisecondTimeout);
         }
 
         [TestMethod]
         public void GetExclusiveAsset()
         {
-            Asset asset = Asset.FromID(617605556).WaitForResult(TestConstants.MaxMilisecondTimeout); // Places are assets.
+            Task.Run(async () =>
+            {
+                Asset asset = await Asset.FromID(617605556); // Places are assets.
 
-            Assert.IsNotNull(asset);
+                Assert.IsNotNull(asset);
 
-            Console.WriteLine("Exclusivity: {0}", asset.GetExclusivity().WaitForResult(TestConstants.MaxMilisecondTimeout));
+                Console.WriteLine("Exclusivity: {0}", await asset.GetExclusivity());
+            }).Wait(TestConstants.MaxMilisecondTimeout);
         }
-
         [TestMethod]
         public void GetPackageContents()
         {
-            Asset asset = Asset.FromID(27133145).WaitForResult(TestConstants.MaxMilisecondTimeout); // Places are assets.
-
-            Assert.IsNotNull(asset);
-            Assert.IsTrue(asset.AssetType == EAssetType.Package);
-
-            Console.WriteLine("Package Contents of {0}:", asset.ID);
-
-            Asset[] assets = (asset.GetAssetsInPackage().WaitForResult(TestConstants.MaxMilisecondTimeout));
-
-            Assert.IsNotNull(assets.Length);
-            Assert.IsTrue(assets.Length > 0);
-
-            foreach (Asset packageAsset in assets)
+            Task.Run(async () =>
             {
-                Assert.IsTrue(packageAsset.ID > 0);
-                Console.WriteLine("Part: {0}", packageAsset.ID);
-            }
+                Asset asset = await Asset.FromID(27133145); // Places are assets.
+
+                Assert.IsNotNull(asset);
+                Assert.IsTrue(asset.AssetType == EAssetType.Package);
+
+                Console.WriteLine("Package Contents of {0}:", asset.ID);
+
+                Asset[] assets = (await asset.GetAssetsInPackage());
+
+                Assert.IsNotNull(assets.Length);
+                Assert.IsTrue(assets.Length > 0);
+
+                foreach (Asset packageAsset in assets)
+                {
+                    Assert.IsTrue(packageAsset.ID > 0);
+                    Console.WriteLine("Part: {0}", packageAsset.ID);
+                }
+            }).Wait(TestConstants.MaxMilisecondTimeout);
         }
 
         [TestMethod]
         public void GetPlaceThumbnail()
         {
-            // Get place asset.
-            Asset asset = Asset.FromID(TestConstants.TestAssetId).WaitForResult(TestConstants.MaxMilisecondTimeout); // Places are assets.
+            Task.Run(async () =>
+            {
+                // Get place asset.
+                Asset asset = await Asset.FromID(TestConstants.TestAssetId); // Places are assets.
 
-            Assert.IsNotNull(asset);
+                Assert.IsNotNull(asset);
 
-            // Get Asset Image URL.
+                // Get Asset Image URL.
 
-            Task<string> imageUrl = asset.GetAssetImageURL(EThumbnailSize.Square250x250);
+                string imageUrl = await asset.GetAssetImageURL(EThumbnailSize.Square250x250);
 
-            imageUrl.Wait();
+                // Test if imageUrl.Result is valid.
+                Assert.IsNotNull(imageUrl);
+                Console.WriteLine("Image URL: {0}", imageUrl);
 
-            // Test if imageUrl.Result is valid.
-            Assert.IsNotNull(imageUrl.Result);
-            Console.WriteLine("Image URL: {0}", imageUrl.Result);
+                // Get Asset Thumbnail as a byte array. (PNG)
 
-            // Get Asset Thumbnail as a byte array. (PNG)
+                byte[] imageData = await asset.GetAssetImage(EThumbnailSize.Square250x250);
 
-            Task<byte[]> imageData = asset.GetAssetImage(EThumbnailSize.Square250x250);
+                // Test if imageData.Result is valid.
+                Assert.IsNotNull(imageData);
+                Assert.IsTrue(imageData.Length > 0);
 
-            imageData.Wait();
-
-            // Test if imageData.Result is valid.
-            Assert.IsNotNull(imageData.Result);
-            Assert.IsTrue(imageData.Result.Length > 0);
-
-            Console.WriteLine("Image Data Length: {0}", imageData.Result.Length);
+                Console.WriteLine("Image Data Length: {0}", imageData.Length);
+            }).Wait(TestConstants.MaxMilisecondTimeout);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace RobloxApi
         }
 
         /// <summary>
-        /// Searches using keywords and category.
+        /// Searches using keywords and category. Will take a long time to search and then convert Search Results into Asset objects.
         /// </summary>
         /// <param name="keywords">Keywords for search</param>
         /// <param name="category">What category.</param>

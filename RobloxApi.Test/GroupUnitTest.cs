@@ -11,113 +11,113 @@ namespace RobloxApi.Test
         [TestMethod]
         public void GetGroupByID()
         {
-            Group group = Group.FromID(TestConstants.TestGroupId).WaitForResult(TestConstants.MaxMilisecondTimeout); // Ruby Studio
-
-            Assert.IsNotNull(group);
-
-            Type ty = typeof(Group);
-            foreach (PropertyInfo info in ty.GetProperties())
+            Task.Run(async () =>
             {
-                Console.WriteLine("{0} = {1}", info.Name, info.GetGetMethod().Invoke(group, new object[] { }));
-            }
+                Group group = await Group.FromID(TestConstants.TestGroupId); // Ruby Studio
+
+                Assert.IsNotNull(group);
+
+                Type ty = typeof(Group);
+                foreach (PropertyInfo info in ty.GetProperties())
+                {
+                    Console.WriteLine("{0} = {1}", info.Name, info.GetGetMethod().Invoke(group, new object[] { }));
+                }
+            }).Wait(TestConstants.MaxMilisecondTimeout);
         }
 
         [TestMethod]
         public void GetGroupRoles()
         {
-            Group group = Group.FromID(TestConstants.TestGroupId).WaitForResult(TestConstants.MaxMilisecondTimeout); // Ruby Studio
-
-            Assert.IsTrue(group.Roles.Length > 0);
-
-            Console.WriteLine("Role Count: {0}", group.Roles.Length);
-
-            foreach(GroupRole role in group.Roles)
+            Task.Run(async () =>
             {
-                Console.WriteLine("Role {0} (Rank Number: {1})", role.Name, role.Rank);
-            }
+                Group group = await Group.FromID(TestConstants.TestGroupId); // Ruby Studio
+
+                Assert.IsTrue(group.Roles.Length > 0);
+
+                Console.WriteLine("Role Count: {0}", group.Roles.Length);
+
+                foreach (GroupRole role in group.Roles)
+                {
+                    Console.WriteLine("Role {0} (Rank Number: {1})", role.Name, role.Rank);
+                }
+            }).Wait(TestConstants.MaxMilisecondTimeout);
         }
 
         [TestMethod]
         public void GetGroupAllies()
         {
-            Group group = Group.FromID(TestConstants.TestGroupId).WaitForResult(TestConstants.MaxMilisecondTimeout); // Dayren Fan Club!
-
-            Group[] allies = group.GetAllies().WaitForResult(TestConstants.MaxMilisecondTimeout);
-
-            Assert.IsTrue(allies.Length > 0);
-
-            Console.WriteLine("Allies count: {0}", allies.Length);
-            Console.WriteLine("----");
-            Type ty = typeof(Group);
-            foreach (Group g in allies)
+            Task.Run(async () =>
             {
-                Assert.IsTrue(g.Roles.Length > 0);
-                Assert.IsTrue(g.Name.Length > 0);
-                Assert.IsTrue(g.ID > 0);
-                foreach (PropertyInfo info in ty.GetProperties())
-                {
-                    Console.WriteLine("{0} = {1}", info.Name, info.GetGetMethod().Invoke(g, new object[] { }));
-                }
+                Group group = await Group.FromID(TestConstants.TestGroupId); // Dayren Fan Club!
+
+                Group[] allies = await group.GetAllies();
+
+                Assert.IsTrue(allies.Length > 0);
+
+                Console.WriteLine("Allies count: {0}", allies.Length);
                 Console.WriteLine("----");
-            }
+                Type ty = typeof(Group);
+                foreach (Group g in allies)
+                {
+                    Assert.IsTrue(g.Roles.Length > 0);
+                    Assert.IsTrue(g.Name.Length > 0);
+                    Assert.IsTrue(g.ID > 0);
+                    foreach (PropertyInfo info in ty.GetProperties())
+                    {
+                        Console.WriteLine("{0} = {1}", info.Name, info.GetGetMethod().Invoke(g, new object[] { }));
+                    }
+                    Console.WriteLine("----");
+                }
+            }).Wait(TestConstants.MaxMilisecondTimeout);
         }
 
         [TestMethod]
         public void GetGroupEnemies()
         {
-            Group group = Group.FromID(TestConstants.TestGroupId).WaitForResult(TestConstants.MaxMilisecondTimeout); // War Clans of ROBLOX
-
-            Group[] enemies = group.GetEnemies().WaitForResult(TestConstants.MaxMilisecondTimeout);
-
-            Assert.IsTrue(enemies.Length > 0);
-
-            Console.WriteLine("Enemies count: {0}", enemies.Length);
-            Console.WriteLine("----");
-            Type ty = typeof(Group);
-            foreach (Group g in enemies)
+            Task.Run(async () =>
             {
-                Assert.IsTrue(g.Roles.Length > 0);
-                Assert.IsTrue(g.Name.Length > 0);
-                Assert.IsTrue(g.ID > 0);
-                // Descriptions can be empty and there can be no owner as well.
-                foreach (PropertyInfo info in ty.GetProperties())
-                {
-                    Console.WriteLine("{0} = {1}", info.Name, info.GetGetMethod().Invoke(g, new object[] { }));
-                }
+                Group group = await Group.FromID(TestConstants.TestGroupId); // War Clans of ROBLOX
+
+                Group[] enemies = await group.GetEnemies();
+
+                Assert.IsTrue(enemies.Length > 0);
+
+                Console.WriteLine("Enemies count: {0}", enemies.Length);
                 Console.WriteLine("----");
-            }
+                Type ty = typeof(Group);
+                foreach (Group g in enemies)
+                {
+                    Assert.IsTrue(g.Roles.Length > 0);
+                    Assert.IsTrue(g.Name.Length > 0);
+                    Assert.IsTrue(g.ID > 0);
+                    // Descriptions can be empty and there can be no owner as well.
+                    foreach (PropertyInfo info in ty.GetProperties())
+                    {
+                        Console.WriteLine("{0} = {1}", info.Name, info.GetGetMethod().Invoke(g, new object[] { }));
+                    }
+                    Console.WriteLine("----");
+                }
+            }).Wait(TestConstants.MaxMilisecondTimeout);
         }
 
         [TestMethod]
         public void IsUserInGroup()
         {
-            Group group = Group.FromID(1242521).WaitForResult(TestConstants.MaxMilisecondTimeout);
+            Task.Run(async () =>
+            {
+                Group group = await Group.FromID(1242521);
 
-            Assert.IsNotNull(group);
+                Assert.IsNotNull(group);
 
-            User user = User.FromID(5762824).WaitForResult(TestConstants.MaxMilisecondTimeout);
+                User user = await User.FromID(5762824);
 
-            bool isUserInGroup = group.IsUserInGroup(user).WaitForResult(TestConstants.MaxMilisecondTimeout);
+                bool isUserInGroup = await group.IsUserInGroup(user);
 
-            Assert.IsTrue(isUserInGroup);
+                Assert.IsTrue(isUserInGroup);
 
-            Console.WriteLine("Is {0} in {1}? {2}", user, group, isUserInGroup);
+                Console.WriteLine("Is {0} in {1}? {2}", user, group, isUserInGroup);
+            }).Wait(TestConstants.MaxMilisecondTimeout);
         }
 
-    }
-
-    public static class AsyncHelper
-    {
-        public static T WaitForResult<T>(this Task<T> t)
-        {
-            t.Wait();
-            return t.Result;
-        }
-
-        public static T WaitForResult<T>(this Task<T> t, int timeoutMS)
-        {
-            t.Wait(timeoutMS);
-            return t.Result;
-        }
     }
 }

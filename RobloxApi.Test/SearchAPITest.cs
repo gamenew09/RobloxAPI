@@ -13,41 +13,47 @@ namespace RobloxApi.Test
         [TestMethod]
         public void SearchCatalog()
         {
-            List<SearchResult> results = RobloxAPI.Search(TestConstants.TestSearchKeyword, ESearchCategory.AllInCatalog).WaitForResult(TestConstants.MaxMilisecondTimeout);
-
-            Assert.IsNotNull(results);
-
-            Assert.IsTrue(results.Count != 0);
-
-            Type ty = typeof(SearchResult);
-            foreach (SearchResult res in results)
+            Task.Run(async () =>
             {
-                foreach(PropertyInfo info in ty.GetProperties())
+                List<SearchResult> results = await RobloxAPI.Search(TestConstants.TestSearchKeyword, ESearchCategory.AllInCatalog);
+
+                Assert.IsNotNull(results);
+
+                Assert.IsTrue(results.Count != 0);
+
+                Type ty = typeof(SearchResult);
+                foreach (SearchResult res in results)
                 {
-                    Console.WriteLine("{0} = {1}", info.Name, info.GetGetMethod().Invoke(res, new object[] { }));
+                    foreach (PropertyInfo info in ty.GetProperties())
+                    {
+                        Console.WriteLine("{0} = {1}", info.Name, info.GetGetMethod().Invoke(res, new object[] { }));
+                    }
+                    Console.WriteLine("---");
                 }
-                Console.WriteLine("---");
-            }
+            }).Wait(TestConstants.MaxMilisecondTimeout);
         }
 
         [TestMethod]
         public void SearchCatalogAsAssets()
         {
-            Asset[] results = RobloxAPI.SearchAssets(TestConstants.TestSearchKeyword, ESearchCategory.AllInCatalog).WaitForResult(TestConstants.MaxMilisecondTimeout);
-
-            Assert.IsNotNull(results);
-
-            Assert.IsTrue(results.Length > 0);
-
-            Type ty = typeof(Asset);
-            foreach (Asset res in results)
+            Task.Run(async () =>
             {
-                foreach (PropertyInfo info in ty.GetProperties())
+                Asset[] results = await RobloxAPI.SearchAssets(TestConstants.TestSearchKeyword, ESearchCategory.AllInCatalog);
+
+                Assert.IsNotNull(results);
+
+                Assert.IsTrue(results.Length > 0);
+
+                Type ty = typeof(Asset);
+                foreach (Asset res in results)
                 {
-                    Console.WriteLine("{0} = {1}", info.Name, info.GetGetMethod().Invoke(res, new object[] { }));
+                    foreach (PropertyInfo info in ty.GetProperties())
+                    {
+                        Console.WriteLine("{0} = {1}", info.Name, info.GetGetMethod().Invoke(res, new object[] { }));
+                    }
+                    Console.WriteLine("---");
                 }
-                Console.WriteLine("---");
-            }
+            }).Wait(TestConstants.MaxMilisecondTimeout);
         }
 
 
