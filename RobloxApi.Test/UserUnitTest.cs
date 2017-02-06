@@ -118,6 +118,27 @@ namespace RobloxApi.Test
         }
 
         [TestMethod]
+        public void GetStatusOfUsers()
+        {
+            Task.Run(async () =>
+            {
+                User user = await User.FromID(TestConstants.TestUserId);
+
+                string nonNullStatusUser = await user.GetStatus();
+
+                Assert.IsNotNull(nonNullStatusUser);
+
+                user = await User.FromID(5762824);
+
+                string nullStatusUser = await user.GetStatus();
+
+                Assert.IsNull(nullStatusUser);
+
+                Console.WriteLine("Non-Null Status: {0}\nNull Status: {1}", nonNullStatusUser, nullStatusUser);
+            }).Wait(TestConstants.MaxMilisecondTimeout);
+        }
+
+        [TestMethod]
         public void IsUserFriendsWith()
         {
             Task.Run(async () =>

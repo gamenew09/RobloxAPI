@@ -8,6 +8,7 @@ using System.Collections;
 using static RobloxApi.FriendList;
 using Newtonsoft.Json;
 using System.Net;
+using HtmlAgilityPack;
 
 namespace RobloxApi
 {
@@ -57,6 +58,20 @@ namespace RobloxApi
         public User(int userId)
         {
             ID = userId;
+        }
+
+        public async Task<string> GetStatus()
+        {
+            HtmlDocument document = new HtmlDocument();
+            document.LoadHtml(await HttpHelper.GetStringFromURL(string.Format("https://www.roblox.com/users/{0}/profile", ID)));
+            HtmlNodeCollection nodes = document
+                .DocumentNode
+                .SelectNodes(string.Format("//div[@data-profileuserid='{0}']", ID));
+            if (nodes == null || nodes.FirstOrDefault() == null)
+                throw new Exception("User page did not have the correct element. Did the website change?");
+            if (string.IsNullOrEmpty(nodes.FirstOrDefault().Attributes["data-statustext"].Value))
+                return null;
+            return nodes.FirstOrDefault().Attributes["data-statustext"].Value;
         }
 
         /// <summary>
