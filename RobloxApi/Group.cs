@@ -96,6 +96,11 @@ namespace RobloxApi
             return string.Format("RobloxGroup ({0}): ID: {1} Name: {2}", GetHashCode(), ID, Name);
         }
 
+        /// <summary>
+        /// Checks if a user is in the group. If an http exeption occurs then it will return false.
+        /// </summary>
+        /// <param name="user">The user to check.</param>
+        /// <returns>A boolean dictating if the user is in this group.</returns>
         public async Task<bool> IsUserInGroup(User user)
         {
             try
@@ -224,6 +229,31 @@ namespace RobloxApi
         public static explicit operator Group(int groupId)
         {
             return new Group(groupId);
+        }
+
+        /// <summary>
+        /// Gets the role of a certain user in the group. If the user isn't in the group or the rank the user has doesn't exist within the group object, it returns null.
+        /// </summary>
+        /// <param name="user">The user to get the role from.</param>
+        /// <returns>The role of the user.</returns>
+        public async Task<GroupRole> GetRoleOfUser(User user)
+        {
+            string data = await HttpHelper.GetStringFromURL(string.Format("https://assetgame.roblox.com/Game/LuaWebService/HandleSocialRequest.ashx?method=GetGroupRank&playerid={0}&groupid={1}", user.ID, ID));
+            data = data.Substring(22).Replace("</Value>", "");
+
+            if(data == "0")
+            {
+                return null;
+            }
+            else
+            {
+                foreach(GroupRole role in Roles)
+                {
+                    if (role.Rank == int.Parse(data))
+                        return role;
+                }
+                return null; // No role of rank x exists, return null.
+            }
         }
 
     }

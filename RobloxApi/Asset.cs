@@ -40,6 +40,20 @@ namespace RobloxApi
         Square420x420
     }
 
+    /// <summary>
+    /// Operating System that an Asset is exclusive to.
+    /// </summary>
+    public enum EItemExclusivity
+    {
+        None,
+
+        AppleIOS,
+        GooglePlay,
+        AmazonAppstore,
+
+        XboxOne,
+    }
+
     public class Asset
     {
         public static explicit operator int(Asset asset)
@@ -150,21 +164,10 @@ namespace RobloxApi
 
         }
 
-        public enum EItemExclusivity
-        {
-            None,
-
-            AppleIOS,
-            GooglePlay,
-            AmazonAppstore,
-
-            XboxOne,
-        }
-
         /// <summary>
-        /// Gets what platform this item is for.
+        /// Gets what platform this item is for only.
         /// </summary>
-        /// <returns>What platform this item is for.</returns>
+        /// <returns>What platform this item is for only.</returns>
         public async Task<EItemExclusivity> GetExclusivity()
         {
             try

@@ -15,7 +15,7 @@ namespace RobloxApi.Test
         {
             Task.Run(async () =>
             {
-                List<SearchResult> results = await RobloxAPI.Search(TestConstants.TestSearchKeyword, ESearchCategory.AllInCatalog);
+                List<SearchResult> results = await SearchAPI.Search(TestConstants.TestSearchKeyword, ESearchCategory.AllInCatalog);
 
                 Assert.IsNotNull(results);
 
@@ -38,7 +38,7 @@ namespace RobloxApi.Test
         {
             Task.Run(async () =>
             {
-                Asset[] results = await RobloxAPI.SearchAssets(TestConstants.TestSearchKeyword, ESearchCategory.AllInCatalog);
+                Asset[] results = await SearchAPI.SearchAssets(TestConstants.TestSearchKeyword, ESearchCategory.AllInCatalog);
 
                 Assert.IsNotNull(results);
 

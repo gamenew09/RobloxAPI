@@ -57,7 +57,7 @@
     <Compile Include="Asset.cs" />
     <Compile Include="Results\SearchAPIResults.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RobloxAPI.cs" />
+    <Compile Include="SearchAPI.cs" />
     <Compile Include="User.cs" />
   </ItemGroup>
   <ItemGroup>

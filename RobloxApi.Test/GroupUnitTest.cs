@@ -26,6 +26,25 @@ namespace RobloxApi.Test
         }
 
         [TestMethod]
+        public void GetGroupRoleOfUser()
+        {
+            Task.Run(async () =>
+            {
+                Group group = await Group.FromID(TestConstants.TestGroupId); // Ruby Studio
+
+                Assert.IsNotNull(group);
+
+                User user = await User.FromID(13562546); // Owner of test group as default.
+
+                GroupRole role = await group.GetRoleOfUser(user);
+
+                Assert.IsNotNull(role);
+
+                Console.WriteLine("User Role: \"{0}\" Rank of Role: {1}", role.Name, role.Rank);
+            }).Wait(TestConstants.MaxMilisecondTimeout);
+        }
+
+        [TestMethod]
         public void GetGroupRoles()
         {
             Task.Run(async () =>

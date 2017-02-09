@@ -60,6 +60,12 @@ namespace RobloxApi
             ID = userId;
         }
 
+        /// <summary>
+        /// Gets the user's blurb/status using the profile page.
+        /// 
+        /// Will most likely break due to ROBLOX possibly changing the html format.
+        /// </summary>
+        /// <returns>The status/blurb of this user.</returns>
         public async Task<string> GetStatus()
         {
             HtmlDocument document = new HtmlDocument();
@@ -249,6 +255,13 @@ namespace RobloxApi
 
             private List<Entry> _Entries;
 
+            /// <summary>
+            /// Gets a friend entry within this friends list page.
+            /// 
+            /// <see cref="Get(int)"/> 
+            /// </summary>
+            /// <param name="index">The entry in a zero index. (1-Infinity)</param>
+            /// <returns>The friend entry.</returns>
             public Entry this[int index]
             {
                 get { return Get(index); }
@@ -259,6 +272,13 @@ namespace RobloxApi
                 get { return _Entries.Count; }
             }
 
+            /// <summary>
+            /// Gets a friend entry within this friends list page.
+            /// 
+            /// <see cref="this[int]"/> 
+            /// </summary>
+            /// <param name="index">The entry in a zero index. (1-Infinity)</param>
+            /// <returns>The friend entry.</returns>
             public Entry Get(int index)
             {
                 return _Entries[index];
@@ -274,6 +294,11 @@ namespace RobloxApi
                 return GetEnumerator();
             }
 
+            /// <summary>
+            /// Does this page contain a user id?
+            /// </summary>
+            /// <param name="userId">The user id to check.</param>
+            /// <returns>Is the user ID in the friend list page.</returns>
             public bool ContainsUserID(int userId)
             {
                 foreach(Entry entry in _Entries)
@@ -332,6 +357,9 @@ namespace RobloxApi
             User = user;
         }
 
+        /// <summary>
+        /// THe user that is associated with this <see cref="FriendList"/>
+        /// </summary>
         public User User
         {
             get;
@@ -340,6 +368,11 @@ namespace RobloxApi
 
         internal Dictionary<int, Page> _Pages = new Dictionary<int, Page>();
 
+        /// <summary>
+        /// Gets a friend list page asynchronusly.
+        /// </summary>
+        /// <param name="page">The page to get in a non-zero based index. 1=first page, 2=second page,...</param>
+        /// <returns></returns>
         public async Task<Page> Get(int page)
         {
             if(page <= 0)

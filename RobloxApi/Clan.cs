@@ -16,18 +16,27 @@ namespace RobloxApi
 
         }
 
+        /// <summary>
+        /// The ID of the clan.
+        /// </summary>
         public int ID
         {
             get;
             internal set;
         }
 
+        /// <summary>
+        /// The Name of the clan.
+        /// </summary>
         public string Name
         {
             get;
             internal set;
         }
 
+        /// <summary>
+        /// The asset/image that is associated with this clan.
+        /// </summary>
         public Asset EmblemAsset
         {
             get;
@@ -39,6 +48,11 @@ namespace RobloxApi
             return string.Format("RobloxClan ({0}): ID: {1} Name: {2} Icon Asset: {3}", GetHashCode(), ID, Name, EmblemAsset);
         }
 
+        /// <summary>
+        /// Gets a Clan object from a group/clan ID.
+        /// </summary>
+        /// <param name="clanId">The clan ID to get.</param>
+        /// <returns>The clan object.</returns>
         public static async Task<Clan> FromID(int clanId)
         {
             try

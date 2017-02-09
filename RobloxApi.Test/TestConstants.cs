@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace RobloxApi.Test
 {
+    /// <summary>
+    /// Most of the constants that the Unit Test uses, there are some values that can be changed that aren't in this class yet.
+    /// </summary>
     public static class TestConstants
     {
 
