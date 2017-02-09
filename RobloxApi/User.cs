@@ -61,6 +61,50 @@ namespace RobloxApi
         }
 
         /// <summary>
+        /// Web scrapes the ROBLOX user page for this user to get friend count.
+        /// </summary>
+        /// <returns>The friend count scraped from roblox.com/users/{userId}/profile.</returns>
+        public async Task<int> GetScrapedFriendCount()
+        {
+            HtmlDocument document = new HtmlDocument();
+            document.LoadHtml(await HttpHelper.GetStringFromURL(string.Format("https://www.roblox.com/users/{0}/profile", ID)));
+            HtmlNodeCollection nodes = document
+                .DocumentNode
+                .SelectNodes(string.Format("//div[@data-profileuserid='{0}']", ID));
+            if (nodes == null || nodes.FirstOrDefault() == null)
+                throw new Exception("User page did not have the correct element. Did the website change?");
+            try
+            {
+                if (string.IsNullOrEmpty(nodes.FirstOrDefault().Attributes["data-friendscount"].Value))
+                    return 0;
+                return int.Parse(nodes.FirstOrDefault().Attributes["data-friendscount"].Value);
+            }
+            catch { return 0; }
+        }
+
+        /// <summary>
+        /// Web scrapes the ROBLOX user page for this user to get follower count.
+        /// </summary>
+        /// <returns>The follower count scraped from roblox.com/users/{userId}/profile.</returns>
+        public async Task<int> GetScrapedFollowerCount()
+        {
+            HtmlDocument document = new HtmlDocument();
+            document.LoadHtml(await HttpHelper.GetStringFromURL(string.Format("https://www.roblox.com/users/{0}/profile", ID)));
+            HtmlNodeCollection nodes = document
+                .DocumentNode
+                .SelectNodes(string.Format("//div[@data-profileuserid='{0}']", ID));
+            if (nodes == null || nodes.FirstOrDefault() == null)
+                throw new Exception("User page did not have the correct element. Did the website change?");
+            try
+            {
+                if (string.IsNullOrEmpty(nodes.FirstOrDefault().Attributes["data-followerscount"].Value))
+                    return 0;
+                return int.Parse(nodes.FirstOrDefault().Attributes["data-followerscount"].Value);
+            }
+            catch { return 0; }
+        }
+
+        /// <summary>
         /// Gets the user's blurb/status using the profile page.
         /// 
         /// Will most likely break due to ROBLOX possibly changing the html format.

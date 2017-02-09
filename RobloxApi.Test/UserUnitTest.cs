@@ -139,6 +139,40 @@ namespace RobloxApi.Test
         }
 
         [TestMethod]
+        public void GetScrapedFriendCount()
+        {
+            Task.Run(async () =>
+            {
+                User user = await User.FromID(TestConstants.TestUserId);
+
+                Assert.IsNotNull(user);
+
+                int friendCount = await user.GetScrapedFriendCount();
+
+                Assert.IsTrue(friendCount > 0);
+
+                Console.WriteLine("User \"{0}\" Friend Count: {1}", user, friendCount);
+            }).Wait(TestConstants.MaxMilisecondTimeout);
+        }
+
+        [TestMethod]
+        public void GetScrapedFollowerCount()
+        {
+            Task.Run(async () =>
+            {
+                User user = await User.FromID(TestConstants.TestUserId);
+
+                Assert.IsNotNull(user);
+
+                int friendCount = await user.GetScrapedFollowerCount();
+
+                Assert.IsTrue(friendCount > 0);
+
+                Console.WriteLine("User \"{0}\" Follower Count: {1}", user, friendCount);
+            }).Wait(TestConstants.MaxMilisecondTimeout);
+        }
+
+        [TestMethod]
         public void IsUserFriendsWith()
         {
             Task.Run(async () =>
