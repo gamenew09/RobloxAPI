@@ -176,6 +176,15 @@ namespace RobloxApi
         }
 
         /// <summary>
+        /// Gets the current User presence in ROBLOX. (What the player is currently doing.)
+        /// </summary>
+        /// <returns><see cref="UserPresence"/> of the current User.</returns>
+        public async Task<UserPresence> GetUserPresence()
+        {
+            return (await UserPresence.GetPresencesFor(ID)).First();
+        }
+
+        /// <summary>
         /// Gets the membership level of this user. 
         /// <para>See <see cref="EMembershipLevel"/> </para>
         /// </summary>

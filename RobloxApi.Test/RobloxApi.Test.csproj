@@ -58,6 +58,7 @@
     <Compile Include="GroupUnitTest.cs" />
     <Compile Include="TestConstants.cs" />
     <Compile Include="ClanUnitTest.cs" />
+    <Compile Include="OutfitUnitTest.cs" />
     <Compile Include="UserUnitTest.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -46,6 +46,30 @@ namespace RobloxApi.Test
         }
 
         [TestMethod]
+        public void GetUserPresence()
+        {
+            Task.Run(async () =>
+            {
+                User user = await User.FromID(TestConstants.TestUserId);
+
+                Assert.IsNotNull(user);
+
+                UserPresence p = await user.GetUserPresence();
+
+                Assert.IsNotNull(p);
+
+                Console.WriteLine("IsOnline: {0}", p.IsOnline);
+
+                Console.WriteLine("GameId: {0}", p.GameId);
+                Console.WriteLine("LastLocation: {0}", p.LastLocation);
+                Console.WriteLine("LastOnline: {0}", p.LastOnline);
+                Console.WriteLine("LocationType: {0}", p.LocationType);
+                Console.WriteLine("PlaceId: {0}", p.PlaceId);
+                Console.WriteLine("PlaceId: {0}", p.VisitorId);
+            }).Wait(TestConstants.MaxMilisecondTimeout);
+        }
+
+        [TestMethod]
         public void UserOwnsAsset()
         {
             Task.Run(async () =>
