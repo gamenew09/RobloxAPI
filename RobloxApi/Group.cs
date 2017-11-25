@@ -141,6 +141,7 @@ namespace RobloxApi
                 group.EmblemUrl = (string)obj["EmblemUrl"];
                 group.Description = (string)obj["Description"];
 
+                /*
                 JArray roles = obj.Value<JArray>("Roles");
 
                 group.Roles = new GroupRole[roles.Count];
@@ -149,6 +150,17 @@ namespace RobloxApi
                 {
                     JObject o = (JObject)roles[i];
                     group.Roles[i] = new GroupRole((string)o["Name"], (int)o["Rank"]);
+                }
+                */
+                string dataa = await HttpHelper.GetStringFromURL(string.Format("https://www.roblox.com/api/groups/{0}/RoleSets/", group.ID));
+                JArray roles = JArray.Parse(dataa);
+
+                group.Roles = new GroupRole[roles.Count];
+
+                for (int i = 0; i < roles.Count; i++)
+                {
+                    JObject o = (JObject)roles[i];
+                    group.Roles[i] = new GroupRole((string)o["Name"], (int)o["Rank"], (int)o["Id"]);
                 }
 
                 return group;
@@ -278,15 +290,22 @@ namespace RobloxApi
             get;
         }
 
+        public int ID
+        {
+            private set;
+            get;
+        }
+
         internal GroupRole()
         {
 
         }
 
-        internal GroupRole(string name, int rank)
+        internal GroupRole(string name, int rank, int id)
         {
             Name = name;
             Rank = rank;
+            ID = id;
         }
     }
 }
