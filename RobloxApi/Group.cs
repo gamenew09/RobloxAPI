@@ -103,11 +103,42 @@ namespace RobloxApi
         /// <returns>A boolean dictating if the user is in this group.</returns>
         public async Task<bool> IsUserInGroup(User user)
         {
-            try
+            string stringifiedJSON = await HttpHelper.GetStringFromURL(string.Format("https://groups.roblox.com/v1/users/{0}/groups/roles", user.ID));
+            JObject obj = JObject.Parse(stringifiedJSON);
+            JToken dataToken;
+
+            if (obj.TryGetValue("data", out dataToken))
             {
-                return (await HttpHelper.GetStringFromURL(string.Format("https://assetgame.roblox.com/Game/LuaWebService/HandleSocialRequest.ashx?method=IsInGroup&playerid={0}&groupid={1}", user.ID, ID))).Contains("true");
+                JArray arr = (JArray)dataToken;
+                foreach(JObject groupMembershipObject in arr)
+                {
+                    JToken groupObject;
+                    if(groupMembershipObject.TryGetValue("group", out groupObject))
+                    {
+                        JToken idToken;
+                        if(((JObject)groupObject).TryGetValue("id", out idToken))
+                        {
+                            if(idToken.Value<int>() == ID)
+                            {
+                                return true;
+                            }
+                        }
+                        else
+                        {
+                            throw new Exception("Token \"group.id\" could not be found in groupMembershipObject.");
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("Token \"group\" could not be found in groupMembershipObject.");
+                    }
+                }
+                return false;
             }
-            catch { return false; }
+            else
+            {
+                throw new Exception("Could not find \"data\" in json response. Did the response model change?");
+            }
         }
 
         /// <summary>
@@ -250,21 +281,83 @@ namespace RobloxApi
         /// <returns>The role of the user.</returns>
         public async Task<GroupRole> GetRoleOfUser(User user)
         {
-            string data = await HttpHelper.GetStringFromURL(string.Format("https://assetgame.roblox.com/Game/LuaWebService/HandleSocialRequest.ashx?method=GetGroupRank&playerid={0}&groupid={1}", user.ID, ID));
-            data = data.Substring(22).Replace("</Value>", "");
+            string stringifiedJSON = await HttpHelper.GetStringFromURL(string.Format("https://groups.roblox.com/v1/users/{0}/groups/roles", user.ID));
+            JObject obj = JObject.Parse(stringifiedJSON);
+            JToken dataToken;
 
-            if(data == "0")
+            if (obj.TryGetValue("data", out dataToken))
             {
+                JArray arr = (JArray)dataToken;
+                foreach (JObject groupMembershipObject in arr)
+                {
+                    JToken groupObject;
+                    if (groupMembershipObject.TryGetValue("group", out groupObject))
+                    {
+                        JToken idToken;
+                        if (((JObject)groupObject).TryGetValue("id", out idToken))
+                        {
+                            if (idToken.Value<int>() == ID)
+                            {
+                                JToken roleToken;
+                                if (groupMembershipObject.TryGetValue("role", out roleToken))
+                                {
+                                    JObject roleObj = (JObject)roleToken;
+
+                                    int roleId = 0;
+                                    string roleName = "";
+                                    int roleRank = 0;
+
+                                    JToken tok;
+                                    if(roleObj.TryGetValue("id", out tok))
+                                    {
+                                        roleId = tok.Value<int>();
+                                    }
+                                    else
+                                    {
+                                        throw new Exception("Token \"id\" could not be found in roleObj.");
+                                    }
+
+                                    if (roleObj.TryGetValue("rank", out tok))
+                                    {
+                                        roleRank = tok.Value<int>();
+                                    }
+                                    else
+                                    {
+                                        throw new Exception("Token \"rank\" could not be found in roleObj.");
+                                    }
+
+                                    if (roleObj.TryGetValue("name", out tok))
+                                    {
+                                        roleName = tok.Value<string>();
+                                    }
+                                    else
+                                    {
+                                        throw new Exception("Token \"name\" could not be found in roleObj.");
+                                    }
+
+                                    return new GroupRole(roleName, roleRank, roleId);
+                                }
+                                else
+                                {
+                                    throw new Exception("Token \"role\" could not be found in groupMembershipObject.");
+                                }
+                            }
+                        }
+                        else
+                        {
+                            throw new Exception("Token \"group.id\" could not be found in groupMembershipObject.");
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("Token \"group\" could not be found in groupMembershipObject.");
+                    }
+                }
                 return null;
             }
             else
             {
-                foreach(GroupRole role in Roles)
-                {
-                    if (role.Rank == int.Parse(data))
-                        return role;
-                }
-                return null; // No role of rank x exists, return null.
+                throw new Exception("Could not find \"data\" in json response. Did the response model change?");
             }
         }
 

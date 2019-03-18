@@ -222,17 +222,35 @@ namespace RobloxApi
         /// <returns>Is this user friends with the specified user?</returns>
         public async Task<bool> IsFriendsWith(User user)
         {
-            try
+            //return (await HttpHelper.GetStringFromURL(string.Format("https://assetgame.roblox.com/Game/LuaWebService/HandleSocialRequest.ashx?method=IsFriendsWith&playerId={0}&userId={1}", ID, user.ID))).Contains("true");
+            string stringifiedJSON = await HttpHelper.GetStringFromURL(string.Format("https://friends.roblox.com/v1/users/{0}/friends", user.ID));
+            JObject jObject = JObject.Parse(stringifiedJSON);
+
+            JToken dataToken;
+            if(jObject.TryGetValue("data", out dataToken))
             {
-                return (await HttpHelper.GetStringFromURL(string.Format("https://assetgame.roblox.com/Game/LuaWebService/HandleSocialRequest.ashx?method=IsFriendsWith&playerId={0}&userId={1}", ID, user.ID))).Contains("true");
+                JArray arr = (JArray)dataToken;
+                foreach(JObject userObject in arr)
+                {
+                    JToken idTok;
+                    if(userObject.TryGetValue("id", out idTok))
+                    {
+                        int friendId = idTok.Value<int>();
+                        if(user.ID == friendId)
+                        {
+                            return true;
+                        }
+                    }
+                }
             }
-            catch { return false; }
+            return false;
         }
 
         /// <summary>
         /// Gets the clan the user is in, returns null if the user is not in a clan.
         /// </summary>
         /// <returns>Gets the clan the user is in, returns null if the user is not in a clan.</returns>
+        [Obsolete("Clans have been deprecated by Roblox.")]
         public async Task<Clan> GetClan()
         {
             string data = await HttpHelper.GetStringFromURL(string.Format("https://api.roblox.com/clans/get-by-user?userId={0}", ID));
