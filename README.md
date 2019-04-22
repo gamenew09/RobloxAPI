@@ -10,7 +10,7 @@ The solution does contain a Unit Test Project (RobloxApi.Test)
 
 To see the tests you can go to (Test -> Windows -> Test Explorer)
 
-(They don't follow a strict guideline at the momement)
+(They don't follow a strict guideline at the moment)
 
 ## Documentation
 Currently some of the functions are documented using XML Documentation. The functions may be documented by using both XML Documentation and the GitHub Repository wiki.
