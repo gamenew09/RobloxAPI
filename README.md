@@ -21,7 +21,7 @@ ROBLOX if you have any problem with any parts of this solution, please contact m
 
 ## Licenses
 
-[RobloxApi License](LICENSE)
+[RobloxApi License](LICENSE.md)
 
 This project uses Newtonsoft.Json, a JSON parsing library:
 ```
